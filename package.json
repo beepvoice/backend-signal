@@ -1,0 +1,20 @@
+{
+  "name": "backend-signal",
+  "version": "1.0.0",
+  "description": "Beep backend handling WebRTC signalling",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@makerforce.io:beep/backend-signal.git"
+  },
+  "author": "Daniel Lim Hai",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4"
+  }
+}
