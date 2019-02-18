@@ -19,6 +19,8 @@ app.get('/subscribe/:user/device/:device', (req, res) => {
     connections[req.params.user] = {};
   }
 
+  console.log(`Someone subscribed to ${req.params.user}, ${req.params.device}`);
+
   connections[req.params.user][req.params.device] = res;
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
@@ -55,6 +57,9 @@ app.post('/user/:user/device/:device', (req, res) => {
   } else if (!req.body.data) {
     res.sendStatus(400);
   }  else {
+    console.log('Posting:');
+    console.log(res.body.data);
+    console.log(`To ${req.params.user}, ${req.params.device}`);
     connections[req.params.user][req.params.device].write(`data: ${req.body.data}\n\n`);
     res.sendStatus(200);
   }
