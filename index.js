@@ -58,7 +58,7 @@ app.post('/user/:user/device/:device', (req, res) => {
     res.sendStatus(400);
   }  else {
     console.log('Posting:');
-    console.log(res.body.data);
+    console.log(req.body.data);
     console.log(`To ${req.params.user}, ${req.params.device}`);
     connections[req.params.user][req.params.device].write(`data: ${req.body.data}\n\n`);
     res.sendStatus(200);
