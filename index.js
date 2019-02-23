@@ -60,7 +60,7 @@ app.post('/user/:user/device/:device', (req, res) => {
     console.log('Posting:');
     console.log(req.body.data);
     console.log(`To ${req.params.user}, ${req.params.device}`);
-    connections[req.params.user][req.params.device].write(`data: ${req.body.data}\n\n`);
+    connections[req.params.user][req.params.device].write(`data: ${JSON.stringify(req.body.data)}\n\n`);
     res.sendStatus(200);
   }
 });
