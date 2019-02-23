@@ -2,6 +2,8 @@
 
 Beep backend handling WebRTC signaling.
 
+**To run this service securely means to run it behind traefik forwarding auth to `backend-auth`**
+
 ## Quickstart
 
 Docker:
@@ -32,7 +34,7 @@ Unless otherwise noted, bodies and responses are with ```Content-Type: applicati
 ### Subscribe to SSE
 
 ```
-GET /subscribe/:user/device/:device
+GET /subscribe
 ```
 
 Subscribe a user's device to the signaling service. Recommended usage:
@@ -45,16 +47,21 @@ es.onmessage = (e) => {
 };
 ```
 
-#### URL Params
+#### Required headers
 
-| Name | Type | Description | Required |
-| ---- | ---- | ----------- | -------- |
-| user | String | User's ID. | ✓ |
-| device | String | Device's ID. Must be unique to the device. I suggest something based on MAC address. | ✓ |
+| Name | Description |
+| ---- | ----------- |
+| X-User-Claim | Stringified user claim, populated by `backend-auth` called by `traefik` |
 
 #### Success Response (200 OK)
 
 An [EventSource](https://developer.mozilla.org/en-US/docs/Web/API/EventSource) stream.
+
+#### Errors
+
+| Code | Description |
+| ---- | ----------- |
+| 401| Invalid user claims header. |
 
 ---
 

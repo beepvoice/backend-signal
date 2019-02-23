@@ -14,31 +14,41 @@ app.use((req, res, next) => {
 
 let connections = {};
 
-app.get('/subscribe/:user/device/:device', (req, res) => {
-  if (!connections[req.params.user]) {
-    connections[req.params.user] = {};
+app.get('/subscribe', (req, res) => {
+  if (!req.get("X-User-Claim")) {
+    res.sendStatus(401);
+    return;
   }
 
-  console.log(`Someone subscribed to ${req.params.user}, ${req.params.device}`);
+  try {
+    const user_claim = JSON.parse(req.get("X-User-Claim"));
+    if (!connections[user_claim.userid]) {
+      connections[user_claim.userid] = {};
+    }
 
-  connections[req.params.user][req.params.device] = res;
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache'
-  });
+    console.log(`Someone subscribed to ${user_claim.userid}, ${user_claim.clientid}`);
 
-  // So the connection doesn't timeout and die
-  let timeoutID = 0;
-  const refresh = () => {
-    res.write(':\n\n');
-    timeoutID = setTimeout(refresh, 25000);
-  };
-  refresh();
+    connections[user_claim.userid][user_claim.clientid] = res;
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache'
+    });
 
-  res.on('close', () => {
-    connections[req.params.user][req.params.device] = null;
-    clearTimeout(timeoutID);
-  });
+    // So the connection doesn't timeout and die
+    let timeoutID = 0;
+    const refresh = () => {
+      res.write(':\n\n');
+      timeoutID = setTimeout(refresh, 25000);
+    };
+    refresh();
+
+    res.on('close', () => {
+      connections[user_claim.userid][user_claim.clientid] = null;
+      clearTimeout(timeoutID);
+    });
+  } catch(e) {
+    res.sendStatus(401)
+  }
 });
 
 app.get('/user/:user/devices', (req, res) => {
