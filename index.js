@@ -66,12 +66,22 @@ app.post('/user/:user/device/:device', (req, res) => {
     res.sendStatus(404);
   } else if (!req.body.data) {
     res.sendStatus(400);
-  }  else {
-    console.log('Posting:');
-    console.log(req.body.data);
-    console.log(`To ${req.params.user}, ${req.params.device}`);
-    connections[req.params.user][req.params.device].write(`data: ${JSON.stringify(req.body.data)}\n\n`);
-    res.sendStatus(200);
+  } else {
+    try {
+      const user_claim = JSON.parse(req.get("X-User-Claim"));
+      if(!(user_claim.userid && user_claim.clientid)) {
+        res.sendStatus(401);
+      } else {
+        console.log('Posting:');
+        console.log(req.body.data);
+        console.log(`To ${req.params.user}, ${req.params.device}`);
+        req.body.data.id = `${user_claim.userid}-${user_claim.clientid}`;
+        connections[req.params.user][req.params.device].write(`data: ${JSON.stringify(req.body.data)}\n\n`);
+        res.sendStatus(200);
+      }
+    } catch(e) {
+      res.sendStatus(401);
+    }
   }
 });
 
