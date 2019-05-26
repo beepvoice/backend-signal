@@ -73,10 +73,10 @@ app.post('/user/:user/device/:device', (req, res) => {
         res.sendStatus(401);
       } else {
         console.log('Posting:');
-        console.log(req.body.data);
+        req.body.id = `${user_claim.userid}:${user_claim.clientid}`
+        console.log(`id: ${req.body.id}\nevent: ${req.body.event}\ndata: ${encodeURI(req.body.data)}\n\n`);
         console.log(`To ${req.params.user}, ${req.params.device}`);
-        req.body.data.id = `${user_claim.userid}-${user_claim.clientid}`;
-        connections[req.params.user][req.params.device].write(`data: ${JSON.stringify(req.body.data)}\n\n`);
+        connections[req.params.user][req.params.device].write(`id: ${req.body.id}\nevent: ${req.body.event}\ndata: ${encodeURI(req.body.data)}\n\n`);
         res.sendStatus(200);
       }
     } catch(e) {
